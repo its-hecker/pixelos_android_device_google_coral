@@ -1,0 +1,320 @@
+diff --git a/AndroidProducts.mk b/AndroidProducts.mk
+index 0b934ac..f559e70 100644
+--- a/AndroidProducts.mk
++++ b/AndroidProducts.mk
+@@ -11,5 +11,4 @@
+ #
+ 
+ PRODUCT_MAKEFILES := \
+-    $(LOCAL_DIR)/lineage_coral.mk \
+-    $(LOCAL_DIR)/lineage_flame.mk
++    $(LOCAL_DIR)/custom_coral.mk
+diff --git a/BoardConfig-common.mk b/BoardConfig-common.mk
+index 999052e..d7518c1 100644
+--- a/BoardConfig-common.mk
++++ b/BoardConfig-common.mk
+@@ -48,9 +48,7 @@ CHRE_DAEMON_LPMA_ENABLED := true
+ TARGET_FS_CONFIG_GEN := $(DEVICE_COMMON_PATH)/config.fs
+ 
+ # HIDL
+-DEVICE_MANIFEST_FILE := \
+-    $(DEVICE_COMMON_PATH)/manifest.xml \
+-    vendor/lunaris/dolby/vintf/dolby_manifest.xml
++DEVICE_MANIFEST_FILE += $(DEVICE_COMMON_PATH)/manifest.xml
+ 
+ DEVICE_MATRIX_FILE := $(DEVICE_COMMON_PATH)/compatibility_matrix.xml
+ DEVICE_PRODUCT_COMPATIBILITY_MATRIX_FILE := $(DEVICE_COMMON_PATH)/device_framework_matrix_product.xml
+@@ -148,8 +146,12 @@ WIFI_HIDL_UNIFIED_SUPPLICANT_SERVICE_RC_ENTRY := true
+ WPA_SUPPLICANT_VERSION := VER_0_8_X
+ 
+ # Ship Lunaris Dolby
+-include vendor/lunaris/dolby/BoardConfigDolby.mk
++-include vendor/lunaris/dolby/BoardConfigDolby.mk
+ 
+ # Props
+ DEVICE_PATH := device/google/coral
+ TARGET_SYSTEM_PROP := $(DEVICE_PATH)/system.prop
++
++# Standalone Floral plugins; append policy without replacing the base lists.
++include vendor/hecker/floral/motionsense/BoardConfigMotionSense.mk
++include vendor/hecker/floral/faceid/BoardConfigFaceID.mk
+diff --git a/coral/device.mk b/coral/device.mk
+index dc7472f..f301b3b 100644
+--- a/coral/device.mk
++++ b/coral/device.mk
+@@ -34,3 +34,6 @@ PRODUCT_PACKAGES += \
+     SettingsOverlayG020J \
+     SettingsOverlayG020P \
+     SettingsOverlayG020Q
++
++# The legacy Google camera provider also needs this interface without Face ID.
++PRODUCT_PACKAGES += android.hardware.thermal@2.0.vendor:64
+diff --git a/lineage_coral.mk b/custom_coral.mk
+similarity index 65%
+rename from lineage_coral.mk
+rename to custom_coral.mk
+index ebadb41..5401c65 100644
+--- a/lineage_coral.mk
++++ b/custom_coral.mk
+@@ -3,8 +3,18 @@
+ # SPDX-License-Identifier: Apache-2.0
+ #
+ 
+-# Inherit some common Lineage stuff.
+-$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
++# PixelOS configuration must precede device/vendor inheritance.
++# The real IR hardware provider is supplied by the Floral Face ID plugin.
++TARGET_FACE_UNLOCK_SUPPORTED := false
++TARGET_SCREEN_WIDTH := 1440
++TARGET_SCREEN_HEIGHT := 3040
++CUSTOM_BUILD := coral
++
++# Retain the source-built mainline configuration used by the working Floral base.
++PRODUCT_BUILD_IGNORE_APEX_CONTRIBUTION_CONTENTS := true
++PRODUCT_MODULE_BUILD_FROM_SOURCE := true
++
++$(call inherit-product, vendor/custom/config/common_full_phone.mk)
+ 
+ #
+ # All components inherited here go to system image
+@@ -41,7 +51,7 @@ PRODUCT_BRAND := google
+ PRODUCT_DEVICE := coral
+ PRODUCT_MANUFACTURER := Google
+ PRODUCT_MODEL := Pixel 4 XL
+-PRODUCT_NAME := lineage_coral
++PRODUCT_NAME := custom_coral
+ 
+ PRODUCT_BUILD_PROP_OVERRIDES += \
+     BuildDesc="coral-user 13 TP1A.221005.002.B2 9382335 release-keys" \
+@@ -49,3 +59,8 @@ PRODUCT_BUILD_PROP_OVERRIDES += \
+     DeviceProduct=coral
+ 
+ $(call inherit-product, vendor/google/coral/coral-vendor.mk)
++
++# Standalone plugins own the enhanced Motion Sense and 3D Face Unlock packages.
++# Keep these AFTER every base device/vendor product.
++$(call inherit-product, vendor/hecker/floral/motionsense/motionsense.mk)
++$(call inherit-product, vendor/hecker/floral/faceid/faceid.mk)
+diff --git a/device-common.mk b/device-common.mk
+index cdf039c..74d965d 100644
+--- a/device-common.mk
++++ b/device-common.mk
+@@ -10,7 +10,7 @@ LOCAL_PATH := device/google/coral
+ $(call inherit-product, hardware/qcom-caf/common/common.mk)
+ 
+ # Ship Lunaris Dolby
+-$(call inherit-product, vendor/lunaris/dolby/dolby.mk)
++$(call inherit-product-if-exists, vendor/lunaris/dolby/dolby.mk)
+ 
+ # Inherit common Pixel configuration
+ include hardware/google/pixel/common/pixel-common-device.mk
+diff --git a/lineage.dependencies b/lineage.dependencies
+deleted file mode 100644
+index efebee9..0000000
+--- a/lineage.dependencies
++++ /dev/null
+@@ -1,10 +0,0 @@
+-[
+-  {
+-    "repository": "android_kernel_google_msm-4.14",
+-    "target_path": "kernel/google/msm-4.14"
+-  },
+-  {
+-    "repository": "android_packages_apps_ElmyraService",
+-    "target_path": "packages/apps/ElmyraService"
+-  }
+-]
+diff --git a/lineage_flame.mk b/lineage_flame.mk
+deleted file mode 100644
+index 27229d2..0000000
+--- a/lineage_flame.mk
++++ /dev/null
+@@ -1,51 +0,0 @@
+-#
+-# SPDX-FileCopyrightText: The LineageOS Project
+-# SPDX-License-Identifier: Apache-2.0
+-#
+-
+-# Inherit some common Lineage stuff.
+-$(call inherit-product, vendor/lineage/config/common_full_phone.mk)
+-
+-#
+-# All components inherited here go to system image
+-#
+-$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
+-$(call inherit-product, $(SRC_TARGET_DIR)/product/generic_system.mk)
+-
+-# Enable mainline checking
+-PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := relaxed
+-
+-#
+-# All components inherited here go to system_ext image
+-#
+-$(call inherit-product, $(SRC_TARGET_DIR)/product/handheld_system_ext.mk)
+-$(call inherit-product, $(SRC_TARGET_DIR)/product/telephony_system_ext.mk)
+-
+-#
+-# All components inherited here go to product image
+-#
+-$(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_product.mk)
+-
+-#
+-# All components inherited here go to vendor image
+-#
+-# TODO(b/136525499): move *_vendor.mk into the vendor makefile later
+-TARGET_SUPPORTS_OMX_SERVICE := false
+-$(call inherit-product, $(SRC_TARGET_DIR)/product/handheld_vendor.mk)
+-$(call inherit-product, $(SRC_TARGET_DIR)/product/telephony_vendor.mk)
+-
+-include device/google/coral/flame/device.mk
+-
+-# Device identifier. This must come after all inclusions
+-PRODUCT_BRAND := google
+-PRODUCT_DEVICE := flame
+-PRODUCT_MANUFACTURER := Google
+-PRODUCT_MODEL := Pixel 4
+-PRODUCT_NAME := lineage_flame
+-
+-PRODUCT_BUILD_PROP_OVERRIDES += \
+-    BuildDesc="flame-user 13 TP1A.221005.002.B2 9382335 release-keys" \
+-    BuildFingerprint=google/flame/flame:13/TP1A.221005.002.B2/9382335:user/release-keys \
+-    DeviceProduct=flame
+-
+-$(call inherit-product, vendor/google/flame/flame-vendor.mk)
+diff --git a/parts/Android.bp b/parts/Android.bp
+index 594360b..9201921 100644
+--- a/parts/Android.bp
++++ b/parts/Android.bp
+@@ -8,15 +8,12 @@ android_app {
+     name: "GoogleParts",
+ 
+     srcs: ["src/**/*.java"],
++    resource_dirs: ["res"],
+     certificate: "platform",
+     platform_apis: true,
+     privileged: true,
+     system_ext_specific: true,
+ 
+-    static_libs: [
+-        "org.lineageos.settings.resources",
+-    ],
+-
+     optimize: {
+         proguard_flags_files: ["proguard.flags"],
+     },
+diff --git a/parts/res/values/strings.xml b/parts/res/values/strings.xml
+new file mode 100644
+index 0000000..c289447
+--- /dev/null
++++ b/parts/res/values/strings.xml
+@@ -0,0 +1,5 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- SPDX-License-Identifier: Apache-2.0 -->
++<resources>
++    <string name="device_settings_app_name">Google device settings</string>
++</resources>
+diff --git a/sepolicy/system_ext/private/property_contexts b/sepolicy/system_ext/private/property_contexts
+deleted file mode 100644
+index b22926f..0000000
+--- a/sepolicy/system_ext/private/property_contexts
++++ /dev/null
+@@ -1,4 +0,0 @@
+-# Oslo debug properties
+-pixel.oslo.airplane_mode.allowed_override       u:object_r:pixel_oslo_debug_prop:s0
+-pixel.oslo.allowed_override                     u:object_r:pixel_oslo_debug_prop:s0
+-pixel.oslo.gating                               u:object_r:pixel_oslo_debug_prop:s0
+diff --git a/sepolicy/system_ext/public/hardware_info_app.te b/sepolicy/system_ext/public/hardware_info_app.te
+index f156531..1775b8c 100644
+--- a/sepolicy/system_ext/public/hardware_info_app.te
++++ b/sepolicy/system_ext/public/hardware_info_app.te
+@@ -1 +1 @@
+-type hardware_info_app, domain;
++type hardware_info_app, domain, coredomain;
+diff --git a/sepolicy/system_ext/public/property.te b/sepolicy/system_ext/public/property.te
+deleted file mode 100644
+index 9620449..0000000
+--- a/sepolicy/system_ext/public/property.te
++++ /dev/null
+@@ -1,2 +0,0 @@
+-# Oslo debug properties
+-vendor_internal_prop(pixel_oslo_debug_prop)
+diff --git a/sepolicy/vendor/google/oslo_app.te b/sepolicy/vendor/google/oslo_app.te
+deleted file mode 100644
+index cd32e85..0000000
+--- a/sepolicy/vendor/google/oslo_app.te
++++ /dev/null
+@@ -1,20 +0,0 @@
+-type oslo_app, domain;
+-
+-app_domain(oslo_app)
+-
+-allow oslo_app fwk_stats_hwservice:hwservice_manager find;
+-allow oslo_app fwk_stats_service:service_manager find;
+-binder_call(oslo_app, statsd)
+-binder_use(oslo_app)
+-
+-allow oslo_app app_api_service:service_manager find;
+-allow oslo_app audioserver_service:service_manager find;
+-allow oslo_app mediaserver_service:service_manager find;
+-allow oslo_app radio_service:service_manager find;
+-
+-r_dir_file(oslo_app, persist_oslo_file)
+-allow oslo_app mnt_vendor_file:dir search;
+-allow oslo_app persist_file:dir search;
+-
+-get_prop(oslo_app, vendor_aware_available_prop)
+-get_prop(oslo_app, pixel_oslo_debug_prop)
+diff --git a/sepolicy/vendor/google/seapp_contexts b/sepolicy/vendor/google/seapp_contexts
+index 857745c..7c9ca86 100644
+--- a/sepolicy/vendor/google/seapp_contexts
++++ b/sepolicy/vendor/google/seapp_contexts
+@@ -6,9 +6,6 @@ user=_app seinfo=platform name=com.android.ramdump domain=ramdump_app type=app_d
+ user=_app seinfo=mds name=com.google.mds domain=modem_diagnostic_app type=app_data_file levelFrom=user
+ user=_app seinfo=platform name=com.google.mds domain=modem_diagnostic_app type=app_data_file levelFrom=user
+ 
+-# Domain for Oslo
+-user=_app seinfo=platform name=com.google.oslo domain=oslo_app type=app_data_file levelFrom=all
+-
+ # Domain for GoogleCBRS app
+ user=_app seinfo=platform name=com.google.googlecbrs domain=cbrs_setup_app type=app_data_file levelFrom=user
+ 
+diff --git a/sepolicy/vendor/qcom/common/hardware_info_app.te b/sepolicy/vendor/qcom/common/hardware_info_app.te
+index 95ed369..ff54d5b 100644
+--- a/sepolicy/vendor/qcom/common/hardware_info_app.te
++++ b/sepolicy/vendor/qcom/common/hardware_info_app.te
+@@ -6,9 +6,8 @@ allow hardware_info_app sysfs_display:file r_file_perms;
+ allow hardware_info_app sysfs_soc:dir search;
+ allow hardware_info_app sysfs_soc:file r_file_perms;
+ 
+-# Battery info
+-allow hardware_info_app sysfs_batteryinfo:dir search;
+-allow hardware_info_app sysfs_batteryinfo:file r_file_perms;
++# Battery history and storage
++# Core domains must use the health HAL instead of reading battery sysfs nodes.
+ allow hardware_info_app maxfg_device:chr_file r_file_perms;
+ allow hardware_info_app sysfs_scsi_devices_0000:dir search;
+ allow hardware_info_app sysfs_scsi_devices_0000:file r_file_perms;
+diff --git a/system.prop b/system.prop
+index ebabaf2..ae0444d 100644
+--- a/system.prop
++++ b/system.prop
+@@ -1,2 +1,5 @@
+ # SurfaceFlinger
+-debug.renderengine.blur_algorithm=kawase2_fix_aliasing
+\ No newline at end of file
++debug.renderengine.blur_algorithm=kawase2_fix_aliasing
++
++# HWUI (framework prop: vendor_init may not set it from vendor.prop)
++ro.hwui.render_ahead=5
+diff --git a/vendor.prop b/vendor.prop
+index 567748d..2249c65 100644
+--- a/vendor.prop
++++ b/vendor.prop
+@@ -88,7 +88,6 @@ ro.hardware.vulkan=adreno
+ debug.sf.enable_adpf_cpu_hint=true
+ 
+ # HWUI
+-ro.hwui.render_ahead=5
+ debug.hwui.use_hint_manager=true
+ debug.hwui.target_cpu_time_percent=30
+ 
