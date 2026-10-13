@@ -1,0 +1,2 @@
+allow omadm_app vendor_radio_data_file:dir rw_dir_perms;
+allow omadm_app vendor_radio_data_file:file create_file_perms;

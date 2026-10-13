@@ -1,0 +1,5 @@
+hwbinder_use(secure_ui_service_app)
+binder_call(secure_ui_service_app, hal_tui_comm_qti)
+allow secure_ui_service_app hal_tui_comm_hwservice:hwservice_manager find;
+
+get_prop(secure_ui_service_app, vendor_display_prop)

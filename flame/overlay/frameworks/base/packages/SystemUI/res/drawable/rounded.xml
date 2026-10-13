@@ -1,0 +1,17 @@
+<!--
+     SPDX-FileCopyrightText: 2019 The Android Open Source Project
+     SPDX-FileCopyrightText: The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <path
+        android:fillColor="#000000"
+        android:pathData="M48,0H0v48C0,15,15,0,48,0z" />
+
+</vector>
+

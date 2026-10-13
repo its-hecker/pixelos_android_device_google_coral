@@ -1,0 +1,11 @@
+userdebug_or_eng(`
+  # talk to /dev/diag
+  allow obdm_app diag_device:chr_file rw_file_perms;
+
+  allow obdm_app sysfs:dir r_dir_perms;
+  r_dir_file(obdm_app, sysfs_msm_subsys)
+
+  allow obdm_app sysfs_soc:dir search;
+  allow obdm_app sysfs_soc:file r_file_perms;
+  allow obdm_app sysfs_ssr:file r_file_perms;
+')
