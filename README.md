@@ -42,8 +42,9 @@ local app-label resource instead of `org.lineageos.settings.resources`.
 The standalone Motion Sense app supplies its own settings resources.
 
 Artifact-path validation remains enabled in `relaxed` mode. The product allows
-the seven exact system paths used by PixelOS's Google ExtServices, ExtShared,
-print recommendation, TensorFlow Lite, DocumentsUI and NFC Tag replacements.
+the eight exact system paths used by PixelOS's Google ExtServices, ExtShared,
+print recommendation, TensorFlow Lite, DocumentsUI, NFC Tag and privileged
+permission configuration.
 Other additions to the generic system product remain subject to validation.
 
 Use the complete setup, preparation, validation and build instructions in

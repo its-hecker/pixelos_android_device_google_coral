@@ -25,11 +25,12 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_system.mk)
 # Enable mainline checking
 PRODUCT_ENFORCE_ARTIFACT_PATH_REQUIREMENTS := relaxed
 
-# Google system replacements selected by PixelOS's bundled GMS.
+# Google system artifacts selected by PixelOS's bundled GMS.
 PRODUCT_ARTIFACT_PATH_REQUIREMENT_ALLOWED_LIST += \
     system/apex/com.google.android.extservices.apex \
     system/app/GoogleExtShared/GoogleExtShared.apk \
     system/app/GooglePrintRecommendationService/GooglePrintRecommendationService.apk \
+    system/etc/permissions/privapp-permissions-google.xml \
     system/lib/libtensorflowlite_jni.so \
     system/lib64/libtensorflowlite_jni.so \
     system/priv-app/DocumentsUIGoogle/DocumentsUIGoogle.apk \
