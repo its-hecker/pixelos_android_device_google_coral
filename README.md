@@ -30,6 +30,13 @@ General fixes retained from the working Infinity tree:
 - Lunaris Dolby inheritance is optional; the local manifest supplies it.
 - The camera's 64-bit legacy thermal interface is explicitly packaged.
 
+The stock camera service uses the build module
+`android.hardware.camera.provider@2.7-service-google-coral`, with the original
+executable name supplied through `stem`. Its extraction entry keeps this suffix
+when vendor makefiles are regenerated. This prevents Soong from joining the
+stock AIDL V1 dependencies to the newer AOSP source service's dependencies.
+The installed binary, init service and VINTF interface remain the stock ones.
+
 PixelOS disables the Lineage SDK. The base GoogleParts eSIM boot receiver uses a
 local app-label resource instead of `org.lineageos.settings.resources`.
 The standalone Motion Sense app supplies its own settings resources.
