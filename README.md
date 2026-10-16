@@ -41,6 +41,11 @@ PixelOS disables the Lineage SDK. The base GoogleParts eSIM boot receiver uses a
 local app-label resource instead of `org.lineageos.settings.resources`.
 The standalone Motion Sense app supplies its own settings resources.
 
+Artifact-path validation remains enabled in `relaxed` mode. The product allows
+the seven exact system paths used by PixelOS's Google ExtServices, ExtShared,
+print recommendation, TensorFlow Lite, DocumentsUI and NFC Tag replacements.
+Other additions to the generic system product remain subject to validation.
+
 Use the complete setup, preparation, validation and build instructions in
 [Pixelos-localmanifest](https://github.com/its-hecker/Pixelos-localmanifest).
 Run preparation again after syncing framework or overlay sources.
