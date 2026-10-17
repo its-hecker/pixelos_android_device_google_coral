@@ -34,3 +34,11 @@ on system_ext, alongside FloralMotionSenseSettings. The matching local manifest
 preparation patches the reviewed framework registration method. These source
 fixes still require a new ROM build and phone test. The native Face HAL also
 crashed in the dirty-flash capture and must be retested separately.
+
+The October 18 running-system report detects zero cameras and no parsed camera
+provider init script. The matching vendor diagnostic pin now owns that script
+on the selected prebuilt; local-manifest preparation clears the unused source
+module's attachment. This branch also lets vendor_init publish
+ro.vendor.aware_available, whose denied set operation left Motion Sense
+unavailable. Google Camera replaces Aperture using the unchanged signed split
+set tested in Infinity-X. Check camera/README.md for its immutable origin.

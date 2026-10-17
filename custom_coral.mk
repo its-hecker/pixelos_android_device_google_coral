@@ -6,6 +6,7 @@
 # PixelOS configuration must precede device/vendor inheritance.
 # The real IR hardware provider is supplied by the Floral Face ID plugin.
 TARGET_FACE_UNLOCK_SUPPORTED := false
+PRODUCT_NO_CAMERA := true
 TARGET_SCREEN_WIDTH := 1440
 TARGET_SCREEN_HEIGHT := 3040
 CUSTOM_BUILD := coral
@@ -75,6 +76,10 @@ $(call inherit-product, vendor/google/coral/coral-vendor.mk)
 # Keep these AFTER every base device/vendor product.
 $(call inherit-product, vendor/hecker/floral/motionsense/motionsense.mk)
 $(call inherit-product, vendor/hecker/floral/faceid/faceid.mk)
+
+# Use the original signed Camera package tested on Infinity-X Coral.
+$(call inherit-product, device/google/coral/camera/camera.mk)
+PRODUCT_PACKAGES := $(filter-out Aperture,$(PRODUCT_PACKAGES))
 
 # Privileged permissions must be allowlisted on the app's own partition.
 PRODUCT_COPY_FILES += \
