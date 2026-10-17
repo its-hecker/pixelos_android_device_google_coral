@@ -75,3 +75,6 @@ $(call inherit-product, vendor/google/coral/coral-vendor.mk)
 # Keep these AFTER every base device/vendor product.
 $(call inherit-product, vendor/hecker/floral/motionsense/motionsense.mk)
 $(call inherit-product, vendor/hecker/floral/faceid/faceid.mk)
+
+# Experimental branch: preserve startup evidence before userdata initialization.
+include device/google/coral/boot_diagnostics/boot_capture.mk
