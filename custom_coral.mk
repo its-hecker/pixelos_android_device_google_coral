@@ -76,5 +76,9 @@ $(call inherit-product, vendor/google/coral/coral-vendor.mk)
 $(call inherit-product, vendor/hecker/floral/motionsense/motionsense.mk)
 $(call inherit-product, vendor/hecker/floral/faceid/faceid.mk)
 
+# Privileged permissions must be allowlisted on the app's own partition.
+PRODUCT_COPY_FILES += \
+    device/google/coral/configs/permissions/privapp-permissions-floral-motionsense.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-floral-motionsense.xml
+
 # Experimental branch: preserve startup evidence before userdata initialization.
 include device/google/coral/boot_diagnostics/boot_capture.mk

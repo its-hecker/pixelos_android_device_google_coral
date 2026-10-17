@@ -26,3 +26,11 @@ adb pull /metadata/pixelos-boot-debug PixelOS-boot-debug
 
 ZIP that folder and include the ROM ZIP filename and installation sequence.
 This capture collects evidence; it does not claim to fix the startup failure.
+
+The October 17 Android boot capture identified a missing Motion Sense
+WRITE_SECURE_SETTINGS privileged permission grant and a FaceProvider HIDL
+registration race. This device branch now installs the narrow permission XML
+on system_ext, alongside FloralMotionSenseSettings. The matching local manifest
+preparation patches the reviewed framework registration method. These source
+fixes still require a new ROM build and phone test. The native Face HAL also
+crashed in the dirty-flash capture and must be retested separately.
