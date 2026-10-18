@@ -79,11 +79,7 @@ $(call inherit-product, vendor/hecker/floral/faceid/faceid.mk)
 
 # Use the original signed Camera package tested on Infinity-X Coral.
 $(call inherit-product, device/google/coral/camera/camera.mk)
-PRODUCT_PACKAGES := $(filter-out Aperture,$(PRODUCT_PACKAGES))
+PRODUCT_PACKAGES := $(filter-out Aperture Camera2,$(PRODUCT_PACKAGES))
 
-# Privileged permissions must be allowlisted on the app's own partition.
-PRODUCT_COPY_FILES += \
-    device/google/coral/configs/permissions/privapp-permissions-floral-motionsense.xml:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/permissions/privapp-permissions-floral-motionsense.xml
-
-# Experimental branch: preserve startup evidence before userdata initialization.
+# Preserve bounded startup evidence on userdebug/eng builds.
 include device/google/coral/boot_diagnostics/boot_capture.mk

@@ -18,6 +18,10 @@ genrule {
 android_app_set {
     name: "GoogleCameraCoral",
     owner: "google",
+    overrides: [
+        "Aperture",
+        "Camera2",
+    ],
     set: ":coral_google_camera_apk_set",
     product_specific: true,
 }
