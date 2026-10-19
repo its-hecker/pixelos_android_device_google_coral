@@ -77,6 +77,9 @@ $(call inherit-product, vendor/google/coral/coral-vendor.mk)
 $(call inherit-product, vendor/hecker/floral/motionsense/motionsense.mk)
 $(call inherit-product, vendor/hecker/floral/faceid/faceid.mk)
 
+# Hecker's Suite is confined to the features-experimental product branch.
+$(call inherit-product, vendor/hecker/floral/suite/suite.mk)
+
 # Use the original signed Camera package tested on Infinity-X Coral.
 $(call inherit-product, device/google/coral/camera/camera.mk)
 PRODUCT_PACKAGES := $(filter-out Aperture Camera2,$(PRODUCT_PACKAGES))
