@@ -1,10 +1,10 @@
-# PixelOS Android 17 — Pixel 4 XL (coral)
+# PixelOS Android 17 — Pixel 4 / Pixel 4 XL
 
 Independent snapshot of `Nahida-Prjkt/android_device_google_coral` on
 `lineage-24.0`. Exact provenance is recorded in [UPSTREAM.json](UPSTREAM.json).
 Existing upstream copyright and license notices remain in place.
 
-The PixelOS product is `custom_coral`, using
+The PixelOS products are `custom_coral` (Pixel 4 XL) and `custom_flame` (Pixel 4), using
 `vendor/custom/config/common_full_phone.mk`. PixelOS's software ParanoidSense
 provider is disabled before common inheritance. The real hardware Face provider
 and Motion Sense UI/compatibility are inherited **after** the base vendor product
@@ -49,7 +49,18 @@ Other additions to the generic system product remain subject to validation.
 
 Use the complete setup, preparation, validation and build instructions in
 [Pixelos-localmanifest](https://github.com/its-hecker/Pixelos-localmanifest).
+For Pixel 4, use
+[pixelos-flame-local-manifest](https://github.com/its-hecker/pixelos-flame-local-manifest).
+Both manifests check out this shared tree at `device/google/coral`; Flame uses
+its own `flame/device.mk`, display configuration, `flame/BoardConfig.mk`,
+`vendor/google/flame` and stock Flame build fingerprint. The camera module's
+`-coral` suffix and `GoogleCameraCoral` app name are shared build identifiers.
+They do not select Coral's vendor images or change Flame's device identity.
 Run preparation again after syncing framework or overlay sources.
 
 Full ROM compilation and PixelOS phone validation are still required. Source
 integration checks do not establish runtime success.
+
+Flame development lives on the separate `pixelos-flame` branch. The stable
+Coral `main` branch is left unchanged. The Flame manifest selects this branch
+and pins its exact commit; Coral keeps its existing manifest and stable pins.

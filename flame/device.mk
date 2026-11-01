@@ -38,3 +38,6 @@ PRODUCT_PACKAGES += \
     SettingsOverlayG020I_VN \
     SettingsOverlayG020M \
     SettingsOverlayG020N
+
+# The shared legacy Google camera provider needs this interface on Flame too.
+PRODUCT_PACKAGES += android.hardware.thermal@2.0.vendor:64

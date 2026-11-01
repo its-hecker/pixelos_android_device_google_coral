@@ -11,4 +11,5 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/custom_coral.mk
+    $(LOCAL_DIR)/custom_coral.mk \
+    $(LOCAL_DIR)/custom_flame.mk
